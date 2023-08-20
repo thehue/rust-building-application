@@ -25,7 +25,7 @@ impl Server {
                     let result = stream.read(&mut buffer);
                     match result {
                         Ok(_) => {
-                            println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                            println!("Received a request: {:?}", String::from_utf8_lossy(&buffer));
                             let parsed_request_result = Request::try_from(&buffer[..]);
                             match parsed_request_result {
                                 Ok(request) => {}
