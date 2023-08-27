@@ -22,6 +22,17 @@ impl TryFrom<&[u8]> for Request {
     }
 }
 
+// 첫번쨰는 공백전 첫번쨰 문자열, 두번째는 나머지 문자열
+fn get_next_word(request: &str) -> Option<(&str, &str)> {
+    for (index, charactor) in request.chars().enumerate() {
+        if (charactor == ' ') {
+            return Some((&request[..index], &request[index + 1..]));
+        }
+    }
+
+    None
+}
+
 pub enum ParseError {
     InvalidRequest,
     InvliadEncoding,
