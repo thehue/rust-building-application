@@ -18,14 +18,28 @@ impl TryFrom<&[u8]> for Request {
     fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
         let request = str::from_utf8(buf)?;
 
-        unimplemented!()
+        // GET /search?name=abc&sort=1 HTTP/1.1\r\nHEADERS..
+        match get_next_word(request){
+            Some((method, request)) => {},
+            None => return Err(ParseError::InvalidRequest)
+        }
+
+       let (method, request) =  get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+       let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+       let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+
+       if protocol != "HTTP/1.1" {
+        return Err(ParseError::InvalidProtocol);
+       }
+
+       unimplemented!()
     }
 }
 
 // 첫번쨰는 공백전 첫번쨰 문자열, 두번째는 나머지 문자열
 fn get_next_word(request: &str) -> Option<(&str, &str)> {
     for (index, charactor) in request.chars().enumerate() {
-        if (charactor == ' ') {
+        if charactor == ' ' || charactor == '\r' {
             return Some((&request[..index], &request[index + 1..]));
         }
     }
