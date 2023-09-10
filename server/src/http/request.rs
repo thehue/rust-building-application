@@ -25,7 +25,7 @@ impl TryFrom<&[u8]> for Request {
         }
 
         let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
         if protocol != "HTTP/1.1" {
@@ -33,6 +33,13 @@ impl TryFrom<&[u8]> for Request {
         }
 
         let method: Method = method.parse()?;
+
+        let mut query_string = None;
+        // if문은 find()함수의 Result를 보고 제공한 패턴(some)에 매칭하려 하고, 변수 i에 있는 내용을 언래핑한다.
+        if let Some(i) = path.find('?') {
+            query_string = Some(&path[i + 1..]);
+            path = &path[..i]
+        }
 
         unimplemented!()
     }
