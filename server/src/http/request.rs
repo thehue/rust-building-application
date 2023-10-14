@@ -6,8 +6,8 @@ use std::str;
 use std::str::Utf8Error;
 
 pub struct Request {
-    path: String,
-    query_string: Option<String>,
+    path: &str,
+    query_string: Option<&str>,
     method: Method,
 }
 
@@ -38,10 +38,14 @@ impl TryFrom<&[u8]> for Request {
         // if문은 find()함수의 Result를 보고 제공한 패턴(some)에 매칭하려 하고, 변수 i에 있는 내용을 언래핑한다.
         if let Some(i) = path.find('?') {
             query_string = Some(&path[i + 1..]);
-            path = &path[..i]
+            path = &path[..i];
         }
 
-        unimplemented!()
+        Ok(Self {
+            path,
+            query_string,
+            method,
+        })
     }
 }
 
