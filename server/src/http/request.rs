@@ -5,17 +5,20 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
 use std::str::Utf8Error;
 
-pub struct Request {
-    path: &str,
-    query_string: Option<&str>,
+// lifetime specifier를 사용하기 위해서는 <>를 사용해서 Request를 제네릭하게 만들어야한다.
+pub struct Request<'buf> {
+    path: &'buf str,
+    query_string: Option<&'buf str>,
     method: Method,
 }
 
-impl TryFrom<&[u8]> for Request {
+// 'buf: Request가 buf라는 수명이 있다고 명시해주는 것
+
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
     // TryFrom trait가 정의하는 기능을 구현하거나 추출하게 됨
     type Error = ParseError;
 
-    fn try_from(buf: &[u8]) -> Result<Self, Self::Error> {
+    fn try_from(buf: &'buf [u8]) -> Result<Request<'buf>, Self::Error> {
         let request = str::from_utf8(buf)?;
 
         // GET /search?name=abc&sort=1 HTTP/1.1\r\nHEADERS..
