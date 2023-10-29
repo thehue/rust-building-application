@@ -1,4 +1,5 @@
 use super::method::{Method, MethodError};
+use super::QueryString;
 use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
@@ -8,7 +9,7 @@ use std::str::Utf8Error;
 // lifetime specifier를 사용하기 위해서는 <>를 사용해서 Request를 제네릭하게 만들어야한다.
 pub struct Request<'buf> {
     path: &'buf str,
-    query_string: Option<&'buf str>,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
 
@@ -40,7 +41,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let mut query_string = None;
         // if문은 find()함수의 Result를 보고 제공한 패턴(some)에 매칭하려 하고, 변수 i에 있는 내용을 언래핑한다.
         if let Some(i) = path.find('?') {
-            query_string = Some(&path[i + 1..]);
+            query_string = Some(QueryString::from(&path[i + 1..]));
             path = &path[..i];
         }
 
