@@ -7,6 +7,7 @@ use std::str;
 use std::str::Utf8Error;
 
 // lifetime specifier를 사용하기 위해서는 <>를 사용해서 Request를 제네릭하게 만들어야한다.
+#[derive(Debug)]
 pub struct Request<'buf> {
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
