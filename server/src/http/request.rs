@@ -14,6 +14,18 @@ pub struct Request<'buf> {
     method: Method,
 }
 
+impl<'buf> Request<'buf> {
+    pub fn path(&self) -> &str {
+        self.path
+    }
+    pub fn query_string(&self) -> Option<&QueryString> {
+        self.query_string.as_ref()
+    }
+    pub fn method(&self) -> &Method {
+        &self.method
+    }
+}
+
 // 'buf: Request가 buf라는 수명이 있다고 명시해주는 것
 
 impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
